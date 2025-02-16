@@ -6,7 +6,7 @@ type SetStateFn<T> = (partialState: Partial<T> | SetterFn<T>) => void;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function createStore<TState extends Record<string, any>>(
   // eslint-disable-next-line no-shadow
-  createState: (setState: SetStateFn<TState>) => TState,
+  createState: (setState: SetStateFn<TState>, getState: () => TState) => TState,
 ) {
   let state: TState;
   let listeners: Set<() => void>;
@@ -62,8 +62,8 @@ export function createStore<TState extends Record<string, any>>(
     return useSyncExternalStore(subscribe, () => selector(state));
   }
 
-  state = createState(setState);
+  state = createState(setState, getState);
   listeners = new Set();
 
-  return { setState, getState, subscribe, useStore };
+  return useStore;
 }
