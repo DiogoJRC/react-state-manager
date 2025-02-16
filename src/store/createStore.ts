@@ -1,8 +1,13 @@
 type SetterFn<T> = (prevState: T) => Partial<T>;
+type SetStateFn<T> = (partialState: Partial<T> | SetterFn<T>) => void;
 
-export function createStore<TState>(initialState: TState) {
-  let state = initialState;
-  const listeners = new Set<() => void>();
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function createStore<TState extends Record<string, any>>(
+  // eslint-disable-next-line no-shadow
+  createState: (setState: SetStateFn<TState>) => TState,
+) {
+  let state: TState;
+  let listeners: Set<() => void>;
 
   function subscribe(listener: () => void) {
     listeners.add(listener);
@@ -32,29 +37,8 @@ export function createStore<TState>(initialState: TState) {
     return state;
   }
 
+  state = createState(setState);
+  listeners = new Set();
+
   return { setState, getState, subscribe };
 }
-
-// const store = createStore({
-//   userName: '',
-//   active: false,
-//   counter: 1,
-// });
-
-// store.subscribe(() => {
-//   console.log('Listerner 1', store.getState());
-// });
-
-// store.subscribe(() => {
-//   console.log('Listerner 2');
-// });
-
-// store.setState({ userName: 'Diogo' });
-
-// store.setState((prevState) => ({
-//   counter: prevState.counter + 1,
-// }));
-
-// store.setState((prevState) => ({
-//   counter: prevState.counter + 1,
-// }));

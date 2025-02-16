@@ -8,6 +8,8 @@ export function UserMenu() {
   useRenderCounter('UserMenu');
 
   const [user, setUser] = useState(globalStore.getState().user);
+  const { login } = globalStore.getState();
+  const { logout } = globalStore.getState();
 
   useEffect(() => {
     const unsubscribe = globalStore.subscribe(() => {
@@ -18,19 +20,6 @@ export function UserMenu() {
       unsubscribe();
     };
   }, []);
-
-  function login() {
-    globalStore.setState({
-      user: {
-        email: 'diogo@mail.com.br',
-        name: 'Diogo Capdeville',
-      },
-    });
-  }
-
-  function logout() {
-    globalStore.setState({ user: null });
-  }
 
   if (!user) {
     return (
